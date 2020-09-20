@@ -1,0 +1,816 @@
+<!DOCTYPE html>
+<head>
+<meta charset="utf-8">
+<title>Multi Line Chart</title>
+<script type="text/javascript" src="https://d3js.org/d3.v5.min.js"></script>
+<link rel="stylesheet" type="text/css" href="./styles.css">
+<!-- Add icon library -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+<link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+<style></style>
+</head>
+<body>
+	<div id="div_template" style="height: 25px;"></div>
+	<!-- Trigger/Open The Modal -->
+	<div id="div_info"
+		style="width: auto; margin-left: 40%; position: fixed; transform: translateY(-50%); margin-top: 10px;">
+		<div>
+			<h4
+				style="background: #fff; opacity: .9; border-radius: 4px; padding: 10px;">
+				SNYDER #5-17 <br> API. 15-131-20244-0000
+				<button id="myBtn" 
+					style="width: 25px; border-radius: 50%; background: lightblue; transform: translateY(-50%); margin-left: 20px;">
+					<i class="fa fa-info"></i>
+				</button>
+			</h4>
+		</div>
+	</div>
+
+	<div id="zoom" style="position: fixed; bottom: 0; right: 0; margin-right: 70px;">
+		<button id="myBtnZoomIn"
+			style="height: 50px; width: 50px; border-radius: 50%; transform: translateY(-50%);">
+			<i class="fa fa-plus"></i>
+		</button><br><br>
+		<button id="myBtnZoomOut"
+			style="height: 50px; width: 50px; border-radius: 50%; transform: translateY(-50%);">
+			<i class="fa fa-minus"></i>
+		</button>
+	</div>
+	
+	<div id="conf" style="position: fixed; top: 100px; right: 0; margin-right: 70px;">
+		<button id="myBtnCogs"
+			style="height: 50px; width: 50px; border-radius: 50%; transform: translateY(-50%);">
+			<i class="fa fa-cogs"></i>
+		</button>
+	</div>
+
+
+	<div id="myModalCogs" class="modal">
+
+		<!-- Modal content -->
+		<div class="modal-content" style="height: 25%; width:25%; margin-top: -25px;">
+			<span class="closeCon">&times;</span>
+			<h4>CONFIGURACIÓN</h4>
+			<div class="input-group mb-3">
+				<div class="input-group-prepend">
+					<div class="input-group-text">
+						<input type="checkbox" id="myCheck" onchange="toggleCheckbox(this,'panoramica')" 
+							aria-label="Checkbox for following text input" checked>
+						Vista Panorámica
+					</div>
+				</div>
+			</div>
+
+			<div class="input-group mb-3">
+				<div class="input-group-prepend">
+					<div class="input-group-text">
+						<input type="checkbox" onchange="toggleCheckbox(this,'grids')" 
+							aria-label="Checkbox for following text input" checked>
+						Fondo Logarítmico
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<!-- The Modal -->
+	<div id="myModal" class="modal">
+
+		<!-- Modal content -->
+		<div class="modal-content" style="height: 95%; margin-top: -25px;">
+			<span class="close">&times;</span>
+
+			<div role="tabpanel">
+				<ul class="nav nav-tabs" role="tablist">
+					<li role="presentation" class="nav-item"><a
+						class="nav-link active" aria-controls="personal" data-toggle="tab"
+						role="tab" href="#personal">File Information</a></li>
+					<li role="presentation" class="nav-item"><a class="nav-link"
+						aria-controls="official" data-toggle="tab" role="tab"
+						href="#official"> Well Information</a></li>
+					<li role="presentation" class="nav-item"><a class="nav-link"
+						aria-controls="official" data-toggle="tab" role="tab"
+						href="#curveI"> Curve Information</a></li>
+				</ul>
+			</div>
+			<div class="tab-content">
+				<div role="tabpanel" class="tab-pane active" id="personal">
+					<h3>File Information</h3>
+					<br>
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>MNEM</th>
+								<th>VALUE</th>
+								<th>DESCRIPTION</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>WELL</td>
+								<td>-</td>
+								<td>SNYDER #5-17</td>
+							</tr>
+							<tr>
+								<td>API NUMBER</td>
+								<td>-</td>
+								<td>15-131-20244-0000</td>
+							</tr>
+							<tr>
+								<td>LOG DATE</td>
+								<td>-</td>
+								<td>02-24-2017</td>
+							</tr>
+							<tr>
+								<td>VERS</td>
+								<td>2.0</td>
+								<td>CWLS log ASCII Standard -VERSION 2.0</td>
+							</tr>
+							<tr>
+								<td>WRAP</td>
+								<td>NO</td>
+								<td>Single line per depth step</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div role="tabpanel" class="tab-pane" id="official">
+					<h3>Well Information</h3>
+					<br>
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>MNEM</th>
+								<th>UNIT</th>
+								<th>Information</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>COMPANY</td>
+								<td>-</td>
+								<td>BLACK STAR 231 CORP.</td>
+							</tr>
+							<tr>
+								<td>FIELD</td>
+								<td>-</td>
+								<td>KANASKA</td>
+							</tr>
+							<tr>
+								<td>LOCATION</td>
+								<td>-</td>
+								<td>2970' FSL & 1349' FWL</td>
+							</tr>
+							<tr>
+								<td>STRT</td>
+								<td>FEET</td>
+								<td>161.40</td>
+							</tr>
+							<tr>
+								<td>STOP</td>
+								<td>FEET</td>
+								<td>3632.90</td>
+							</tr>
+							<tr>
+								<td>STEP</td>
+								<td>FEET</td>
+								<td>0.50</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+				<div role="tabpanel" class="tab-pane" id="curveI">
+					<h3>Curve Information</h3>
+					<br>
+					<table class="table table-striped">
+						<thead>
+							<tr>
+								<th>MNEM</th>
+								<th>UNIT</th>
+								<th>DESCRIPTION</th>
+							</tr>
+						</thead>
+						<tbody>
+							<tr>
+								<td>AZIM</td>
+								<td>deg</td>
+								<td>Azimuth</td>
+							</tr>
+							<tr>
+								<td>CILD</td>
+								<td>ohm/m</td>
+								<td>Deep Induction R Conductivity</td>
+							</tr>
+							<tr>
+								<td>CALN</td>
+								<td>in</td>
+								<td>Compensated Neutron Caliper (Diameter)</td>
+							</tr>
+							<tr>
+								<td>CALD</td>
+								<td>in</td>
+								<td>Litho Caliper (Diameter)</td>
+							</tr>
+							<tr>
+								<td>GR</td>
+								<td>gAPI</td>
+								<td>Gamma Ray - API Units</td>
+							</tr>
+							<tr>
+								<td>ILD</td>
+								<td>ohm/m</td>
+								<td>Phased Deep Induction Resistivity</td>
+							</tr>
+							<tr>
+								<td>ILM</td>
+								<td>ohm/m</td>
+								<td>Phased Medium Induction Resistivity</td>
+							</tr>
+							<tr>
+								<td>INV_R</td>
+								<td>ohm/m</td>
+								<td>Mi+cro Inverse Resistivity</td>
+							</tr>
+							<tr>
+								<td>LWTLB</td>
+								<td>lb</td>
+								<td>Line Weight Filtered (lbs)</td>
+							</tr>
+						</tbody>
+					</table>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		//Modal
+		// Get the modal
+
+		var modal = document.getElementById("myModal");
+
+		// Get the button that opens the modal
+		var btn = document.getElementById("myBtn");
+
+		// Get the <span> element that closes the modal
+		var span = document.getElementsByClassName("close")[0];
+
+		// When the user clicks the button, open the modal 
+		btn.onclick = function() {
+			modal.style.display = "block";
+		}
+
+		// When the user clicks on <span> (x), close the modal
+		span.onclick = function() {
+			modal.style.display = "none";
+		}
+
+		// When the user clicks anywhere outside of the modal, close it
+		window.onclick = function(event) {
+			if (event.target == modal) {
+				modal.style.display = "none";
+			}
+		}
+		
+		//Modal Cogs
+		var modalCogs = document.getElementById("myModalCogs");
+
+		// Get the button that opens the modal
+		var btn = document.getElementById("myBtnCogs");
+
+		// Get the <span> element that closes the modal
+		var span = document.getElementsByClassName("closeCon")[0];
+
+		// When the user clicks the button, open the modal 
+		btn.onclick = function() {
+			modalCogs.style.display = "block";
+		}
+
+		// When the user clicks on <span> (x), close the modal
+		span.onclick = function() {
+			modalCogs.style.display = "none";
+		}
+
+		// When the user clicks anywhere outside of the modal, close it
+		window.onclick = function(event) {
+			if (event.target == modal) {
+				modalCogs.style.display = "none";
+			}
+		}
+		
+		
+		
+		
+		function toggleCheckbox(element, type) {
+			var xCheck = element.checked;
+			
+			//Grids
+			var grids1 = document.getElementById("grid1");
+			var grids2 = document.getElementById("grid2");
+			
+			//Panoramica
+			var panoramicaI = document.getElementById("panoramica");
+			
+			if(xCheck==false){
+				if(type=="grids"){
+					grids1.style.display = "none";
+					grids2.style.display = "none";
+				}else if(type=="panoramica"){
+					panoramicaI.style.display = "none";
+				}			
+			}else if (xCheck==true){
+				if(type=="grids"){
+					grids1.style.display = "block";
+					grids2.style.display = "block";
+				}else if(type=="panoramica"){
+					panoramicaI.style.display = "block";
+				}		
+			}
+		}
+		
+
+		//------------------------1. PREPARATION-------------------------//
+		//-----------------------------SVG-------------------------------//
+		const width = 280;
+		const height = 6700;
+		const widthZoom = 50;
+		const heightZoom = 580;
+		const margin = 60;
+		const padding = 20;
+		const adj = 120;
+
+		const svgZoom = d3.select("body").append("svg").attr("width", 120).attr("id", "panoramica")
+				.attr("height", heightZoom + adj).attr("style",
+						"background: #f5f5f5; position: fixed;").append("g")
+				.attr("transform", "translate(60,60)");
+
+		// we are appending SVG first
+		const svg = d3.select("body").append("svg").attr("width", width + 160)
+				.attr("height", height + adj).append("g").attr("transform",
+						"translate(" + 160 + "," + margin + ")");
+
+		// we are appending SVG second
+		const svg2 = d3.select("body").append("svg").attr("width", width + 80)
+				.attr("height", height + adj).append("g").attr("transform",
+						"translate(" + 60 + "," + margin + ")");
+
+		// we are appending SVG second
+		const svg3 = d3.select("body").append("svg").attr("width", width + adj)
+				.attr("height", height + adj).append("g").attr("transform",
+						"translate(" + 60 + "," + margin + ")");
+
+		//-----------------------------DATA------------------------------//
+
+		const dataset = d3.csv("http://localhost:8080/getAZIM");
+		dataset
+				.then(function(data) {
+					const slices = data.columns.slice(1).map(function(id) {
+						return {
+							id : id,
+							values : data.map(function(d) {
+								return {
+									dept : d.DEPT,
+									measurement : +d[id]
+								};
+							})
+						};
+					});
+
+					data.forEach(function(d) {
+						d.DEPT = +d.DEPT;
+					});
+
+					//console.log("slicesMM",slicesMM);
+
+					// List of groups = header of the csv files
+					var keys = data.columns.slice(1);
+
+					//console.log("Column headers", data.columns);
+					//console.log("Column headers without date", data.columns.slice(0));
+					// returns the sliced dataset
+					console.log("Slices", slices);
+					// returns the first slice
+					//console.log("First slice", slices[0]);
+					// returns the array in the first slice
+					//console.log("A array", slices[0].values);
+					// returns the date of the first row in the first slice
+					//console.log("Date element", slices[0].values[0].dept);
+					// returns the array's length
+					//console.log("Array length", (slices[0].values).length);
+
+					//----------------------------SCALES-----------------------------//
+					const xScale = d3.scaleLinear().rangeRound([ 0, width ]);
+					const yScale = d3.scaleLinear().range([ 0, height ]);
+					const xScaleZoom = d3.scaleLinear().rangeRound(
+							[ 0, widthZoom ]);
+					const yScaleZoom = d3.scaleLinear()
+							.range([ 0, heightZoom ]);
+
+					xScale.domain([ (0), d3.max(slices, function(c) {
+						return d3.max(c.values, function(d) {
+							return d.measurement;
+						});
+					}) ]);
+
+					xScaleZoom.domain([ (0), d3.max(slices, function(c) {
+						return d3.max(c.values, function(d) {
+							return d.measurement;
+						});
+					}) ]);
+
+					const maxDept = d3.min(data, function(d) {
+						return d.DEPT;
+					});
+
+					yScale.domain([ 0, maxDept ]);
+					yScaleZoom.domain([ 0, maxDept ]);
+
+					//-----------------------------AXES------------------------------//
+					const yaxis = d3.axisLeft().scale(yScale).ticks(40);
+					const yaxis2 = d3.axisLeft().scale(yScaleZoom).ticks(10);
+					const xaxis = d3.axisTop().scale(xScale);
+
+					//----------------------------LINES------------------------------//
+					const line = d3.line().curve(d3.curveBasis).x(function(d) {
+						return xScale(d.measurement);
+					}).y(function(d) {
+						return yScale(d.dept);
+					});
+
+					const lineZoom = d3.line().curve(d3.curveBasis).x(
+							function(d) {
+								return xScaleZoom(d.measurement);
+							}).y(function(d) {
+						return yScaleZoom(d.dept);
+					});
+
+					let id = 0;
+					const ids = function() {
+						return id++;
+					}
+
+					//-------------------------2. DRAWING----------------------------//
+
+					//-----------------------------AXES LINES------------------------------//
+					svg.append("g").attr("class", "axis").attr("transform",
+							"translate(0," + height + ")").call(xaxis);
+
+					svg.append("g").attr("class", "axis").call(yaxis);
+
+					svg.append("g").attr("class", "axis").style("position",
+							"fixed").call(xaxis);
+
+					svgZoom.append("g").attr("class", "axis").call(yaxis2);
+
+					//----------------------------LINES------------------------------//
+					var color = d3.scaleOrdinal(d3.schemeCategory10); // set the colour scale
+					console.log("color", color(ids));
+
+					const lines = svg.selectAll("lines").data(slices).enter()
+							.append("g");
+
+					lines.append("path").attr("class", "line").style("stroke",
+							function(d, i) {
+								return color(i);
+							}) // assign ID
+					.attr("id", function(d) {
+						return 'tag' + d.id.replace(/\s+/g, '');
+					}).attr("d", function(d) {
+						return line(d.values);
+					});
+
+					//Lines Zoom					
+					const linesZoom = svgZoom.selectAll("lines").data(slices)
+							.enter().append("g");
+
+					linesZoom.append("path").attr("class", "line").style(
+							"stroke", function(d, i) {
+								return color(i);
+							}) // assign ID
+					.attr("id", function(d) {
+						return 'tagZoom' + d.id.replace(/\s+/g, '');
+					}).attr("d", function(d) {
+						return lineZoom(d.values);
+					});
+
+					var brush = d3.brushY(yScaleZoom); //.on("brush", updateChartArea)
+
+					//append the brush for the selection of subsection  
+					linesZoom.append("g").attr("class", "y brush").call(brush)
+							.selectAll("rect").attr("height", heightZoom).on(
+									"mousemove", function() {
+										var mouse = d3.mouse(this);
+										updateChartArea(mouse[1], heightZoom);
+									});
+					//Fin lines zoom
+
+					lines
+							.append("text")
+							.attr("x", function(d, i) {
+								return (i * 50) + 30;
+							})
+							// space legend
+							.attr("y", -30)
+							.attr("class", "legend")
+							// style the legend
+							.style("fill", function(d, i) { // Add the colours dynamically
+								return color(i);
+							})
+							.text(function(d) {
+								return d.id;
+							})
+							.on(
+									"click",
+									function(d) {
+										// Determine if current line is visible 
+										var active = d.active ? false : true, newOpacity = active ? 0
+												: 1;
+										// Hide or show the elements based on the ID
+										d3.select(
+												"#tag"
+														+ d.id.replace(/\s+/g,
+																''))
+												.transition().duration(100)
+												.style("opacity", newOpacity);
+										// Update whether or not the elements are active
+										d.active = active;
+									});
+
+					var mouseG = svg.append("g") // this the black vertical line to folow mouse
+					.attr("class", "mouse-over-effects");
+
+					mouseG.append("path").attr("class", "mouse-line").style(
+							"stroke", "black").style("stroke-width", "1px")
+							.style("opacity", "0");
+
+					var mousePerLine = mouseG.selectAll(".mouse-per-line")
+							.data(slices).enter().append("g").attr("class",
+									"mouse-per-line");
+
+					var linesM = document.getElementsByClassName('line');
+
+					// create a tooltip
+					var Tooltip = d3.select("#div_template").append("div")
+							.style("opacity", 0).attr("class", "tooltip")
+							.style("background-color", "white").style("border",
+									"solid").style("border-width", "2px")
+							.style("border-radius", "5px").style("padding",
+									"5px")
+
+					mousePerLine.append("circle").attr("r", 3).style("stroke",
+							function(d, i) {
+								console.log("Color", color(i));
+								return color(i);
+							}).style("fill", function(d, i) {
+						return color(i);
+					}).style("stroke-width", "1px").style("opacity", "0");
+
+					mousePerLine.append("text").attr("transform",
+							"translate(10,15)").attr("class", "lineHoverText");
+
+					mouseG
+							.append("rect")
+							.attr("width", width)
+							.attr("height", height)
+							.attr("fill", "none")
+							.attr("pointer-events", "all")
+							.on(
+									"mouseout",
+									function() {
+										d3.select(".mouse-line").style(
+												"opacity", "0");
+										d3.selectAll(".mouse-per-line circle")
+												.style("opacity", "0");
+										d3.selectAll(".mouse-per-line text")
+												.style("opacity", "0")
+										Tooltip.style("opacity", 0);
+										d3.select(this).style("stroke", "none")
+												.style("opacity", 0.8);
+									})
+							.on(
+									"mouseover",
+									function() {
+										d3.select(".mouse-line").style(
+												"opacity", "1");
+										d3.selectAll(".mouse-per-line circle")
+												.style("opacity", "1");
+										d3.selectAll(".mouse-per-line text")
+												.style("opacity", "1")
+										Tooltip.style("opacity", 1).style(
+												"position", "absolute");
+										d3.select(this)
+												.style("stroke", "black")
+												.style("opacity", 1);
+									})
+							.on(
+									"mousemove",
+									function() {
+										var mouse = d3.mouse(this);
+										d3.select(".mouse-line").attr(
+												"d",
+												function() {
+													var d = "M" + 0 + ","
+															+ mouse[1];
+													d += " " + height + ","
+															+ mouse[1];
+													return d;
+												})
+
+										var textToolTip = "";
+										d3
+												.selectAll(".mouse-per-line")
+												.attr(
+														"transform",
+														function(d, i) {
+
+															var dDept = yScale
+																	.invert(mouse[1]), bisect = d3
+																	.bisector(function(
+																			d) {
+																		return d.dept;
+																	}).right;
+
+															console.log(
+																	"dDept",
+																	dDept);
+
+															idx = bisect(dDept,
+																	d.values);
+															console.log("idx",
+																	idx);
+
+															var beginning = 0, end = linesM[i]
+																	.getTotalLength(), target = null;
+
+															while (true) {
+																target = Math
+																		.floor((beginning + end) / 2)
+																pos = linesM[i]
+																		.getPointAtLength(target);
+
+																if ((target === end || target == beginning)
+																		&& pos.y !== mouse[1]) {
+																	break;
+																}
+
+																if (pos.y > mouse[1])
+																	end = target;
+																else if (pos.y < mouse[1])
+																	beginning = target;
+																else
+																	break; // position found
+															}
+
+															console
+																	.log(d.id
+																			+ ": "
+																			+ yScale
+																					.invert(mouse[1]));
+															textToolTip = "<h7 style='color:"
+																	+ color(i)
+																	+ ";'>"
+																	+ textToolTip
+																	+ d.id
+																	+ ": "
+																	+ xScale
+																			.invert(
+																					pos.x)
+																			.toFixed(
+																					1)
+																	+ "<br> </h7>";
+															return "translate("
+																	+ pos.x
+																	+ ","
+																	+ mouse[1]
+																	+ ")";
+
+														});
+
+										//console.log(textToolTip);
+										Tooltip.html(textToolTip).style(
+												"left",
+												(d3.mouse(this)[0] + 180)
+														+ "px").style(
+												"top",
+												(d3.mouse(this)[1] + 105)
+														+ "px")
+									});
+
+					//-----------------------------AXES AREA------------------------------//
+					svg2.append("g").attr("class", "axis").attr("transform",
+							"translate(0," + height + ")").call(xaxis);
+
+					svg2.append("g").attr("class", "axis").call(yaxis);
+
+					svg2.append("g").attr("class", "axis").call(xaxis);
+
+					//-----------------------------AREA------------------------------//
+
+					g2 = svg2.append("g");
+
+					// Area generator
+					var area = d3.area().y(function(d) {
+						//console.log("Areeeee",d.DEPT);
+						return yScale(d.dept);
+					}).x0(function(d) {
+						return xScale(0);
+					}).x1(function(d) {
+						return xScale(d.measurement);
+					});
+
+					var source = g2.selectAll(".area").data(slices).enter()
+							.append("g").attr("class", function(d) {
+								return `area ${d.id}`;
+							})
+
+					source.append("path").attr("d", function(d) {
+						return area(d.values);
+					}).style("fill", function(d, i) {
+						return color(i);
+					}).style("stroke", "black").style("stroke-width", 0.5);
+
+					// Add brushing
+					//var brush = d3.brush()                   // Add the brush feature using the d3.brush function
+					// initialise the brush area: start at 0,0 and finishes at width,height: it means I select the whole graph area
+					//.on("end", updateChartArea);             // Each time the brush selection changes, trigger the 'updateChart' function
+					//.extent( [ [0,mouseArea[0]], [width,200] ] ) 
+
+					function updateChartArea(a, height) {
+						console.log("X", a);
+						window.scroll(0, height * a / 55);
+					}
+
+					//-----------------------------AXES DIFFERENCE AREA------------------------------//
+					svg3.append("g").attr("class", "axis").attr("transform",
+							"translate(0," + height + ")").call(xaxis);
+
+					svg3.append("g").attr("class", "axis").call(yaxis);
+
+					svg3.append("g").attr("class", "axis").call(xaxis);
+
+					//-----------------------------DIFFERENCE AREA------------------------------//
+					svg3.datum(data);
+					var maxWidth = 900;
+
+					svg3.append("clipPath").attr("id", "clip-above").append(
+							"path").attr("d", d3.area().y(function(d) {
+						return yScale(d.DEPT);
+					}).x0(function(d) {
+						return xScale(0);
+					}).x1(function(d) {
+						return xScale(d.ILM);
+					}));
+
+					svg3.append("clipPath").attr("id", "clip-below").append(
+							"path").attr("d", d3.area().y(function(d) {
+						return yScale(d.DEPT);
+					}).x0(function(d) {
+						return xScale(maxWidth);
+					}).x1(function(d) {
+						return xScale(d.ILM);
+					}));
+
+					svg3.append("path").attr("clip-path", "url(#clip-above)")
+							.attr("fill", color(2)).attr("d",
+									d3.area().y(function(d) {
+										return yScale(d.DEPT);
+									}).x0(function(d) {
+										return xScale(maxWidth);
+									}).x1(function(d) {
+										return xScale(d.ILD);
+									}));
+
+					svg3.append("path").attr("clip-path", "url(#clip-below)")
+							.attr("fill", color(1)).attr("d",
+									d3.area().y(function(d) {
+										return yScale(d.DEPT);
+									}).x0(function(d) {
+										return xScale(0);
+									}).x1(function(d) {
+										return xScale(d.ILD);
+									}));
+
+					svg3.append('g').attr('class', 'grid').attr("id", "grid1").attr("style",
+							"opacity: 0.3; background: #f5f5f5;").call(
+							d3.axisBottom().scale(xScale)
+									.tickSize(height, 0, 0).tickFormat(''));
+
+					svg3.append('g').attr('class', 'grid').attr("id", "grid2").attr("style",
+							"opacity: 0.3; background: #f5f5f5;").call(
+							d3.axisLeft().scale(yScale).tickSize(-width, 0, 0)
+									.tickFormat('').ticks(500));
+
+					//console.log("Data", data);
+
+					//-----------------------------AXES 3D------------------------------//
+					//svg4.append("g").attr("class", "axis").attr("transform",
+					//	"translate(0," + height + ")").call(xaxis);
+
+					//svg4.append("g").attr("class", "axis").call(yaxis);
+
+					//svg4.append("g").attr("class", "axis").call(xaxis);
+
+				});
+	</script>
